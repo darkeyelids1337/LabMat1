@@ -87,22 +87,29 @@ def create_button_frame(container):
 
     ttk.Button(frame, text='Файл', command=addButtons).grid(column=0, row=0)
     ttk.Button(frame, text='Параметры', command=lambda: create_settings_frame(planetsCount)).grid(column=1, row=0)
-    ttk.Button(frame, text='Запуск модели', command=lambda: build_chart(root, settings, planets)).grid(column=2, row=0)
+    ttk.Button(frame, text='Запуск модели', command=lambda: toStart(False)).grid(column=2, row=0)
     ttk.Button(frame, text='Остановка').grid(column=3, row=0)
 
     for widget in frame.winfo_children():
         widget.grid(padx=10, pady=5)
 
     return frame
-
-
+def toStart(window):
+    if window:
+        window.destroy()
+    if len(planets) == 1:
+        for i in range(int(planetsCount) - 1):
+            planets.append(
+                {'X': float(149500000000 * (i + 1)), 'Y': float(0), 'vX': float(0),
+                 'vY': float(sqrt((G * M) / 149500000000 / (i + 1))),
+                 'M': float((i + 1) * 6.083 * 10 ** 24), 'E': float(0)})
+    build_chart(root, settings, planets)
 def create_settings_frame(planetsCount):
     window = Tk()
     global settings
     global planets
     if len(planets) == 1:
         for i in range(int(planetsCount) - 1):
-            print(float(sqrt(((G * M) / 149500000000) * (i + 1))))
             planets.append(
                 {'X': float(149500000000 * (i + 1)), 'Y': float(0), 'vX': float(0), 'vY': float(sqrt((G * M) / 149500000000 / (i + 1))),
                  'M': float((i + 1) * 6.083 * 10 ** 24), 'E': float(0)})
@@ -116,17 +123,6 @@ def create_settings_frame(planetsCount):
             return True
         else:
             return False
-
-    # def on_sun_change(input, name):
-    #     global sun
-    #     #print(name)
-    #     reg = '\d+[eE][+-]\d+|\d+\.?\d*|\.\d+'
-    #     if re.match(reg, input):
-    #         sun[name] = input
-    #         return True
-    #     else:
-    #         return False
-
     def on_planets_change(input, index, key):
         global planets
         #print(planets[0][key])
@@ -142,9 +138,7 @@ def create_settings_frame(planetsCount):
         selection = combobox.get()
         settings['scheme'] = selection
 
-    def toInput():
-        print(settings)
-        print(planets)
+
 
     window.title("Параметры")
     window.geometry("1260x500")
@@ -176,12 +170,6 @@ def create_settings_frame(planetsCount):
                   justify=CENTER).grid(column=i, row=0)
     for i in range(planetsCount):
         ttk.Label(frameTable, text=i, justify=CENTER).grid(column=0, row=i + 1)
-    # for i in sun:
-    #     if i == 'E':
-    #         break
-    #     e1 = ttk.Entry(frameTable, validate="key", validatecommand=(regsun, '%P', i), width=30)
-    #     e1.grid(column=list(sun.keys()).index(i) + 1, row=1)
-    #     e1.insert(0, sun[i])
     for item in planets:
         for value in item:
             if value == 'E':
@@ -190,7 +178,7 @@ def create_settings_frame(planetsCount):
             e2.grid(column=list(item.keys()).index(value) + 1, row=planets.index(item) + 1)
             e2.insert(0, item[value])
 
-    ttk.Button(frame1, text='Ввод', command=toInput).grid(column=5, row=0)
+    ttk.Button(frame1, text='Ввод', command=lambda: toStart(window)).grid(column=5, row=0)
 
 
 root = Tk()
