@@ -35,13 +35,14 @@ def graphchart(win, settings, planets):
     step_time = int(settings['timeStep'])
     scheme = settings['scheme']
     def to_file(event):
-        sep = f'\n'
-        data = f"{sep.join(f'x={i[i]} y={i[1]} vx={i[2]} vy={i[3]} m={i[6]}' for i in planets)}"
-        ind = len(vx[0]) - 1
-        vxm = _vxy(vx, planets, general_m, ind)
-        vym = _vxy(vy, planets, general_m, ind)
-        energy = _energy(x, y, vx, vy, planets, ind)
-        data += f'\nvxM = {vxm} vyM = {vym} E = {energy}'
+        data = ''
+        for i in planets:
+            data += f"x={i['X']} y={i['Y']} vx={i['vX']} vy={i['vY']} m={i['M']} \n"
+        last = len(vx[0]) - 1
+        vxF = _vxy(vx, planets, general_m, last)
+        vyF = _vxy(vy, planets, general_m, last)
+        energy = _energy(x, y, vx, vy, planets, last)
+        data += f'\nvX Final = {vxF} vY Final = {vyF} Energy Final = {energy}'
         new_file = fd.asksaveasfile(title="Сохранить файл", defaultextension=".txt",
                                     filetypes=(("Текстовый файл", "*.txt"),))
 
@@ -71,7 +72,7 @@ def graphchart(win, settings, planets):
                         f'E = {energy}', bbox=dict(boxstyle='round', fc='w'))
             ax.set_xlabel('x')
             ax.set_ylabel('y')
-            button = Button(x_button, 'Сохранить')
+            button = Button(button_place, 'Save')
             button.on_clicked(to_file)
     if scheme == 'Эйлера-Крамера':
         t, x, y, vx, vy = scheme_Euler_Kramer(time, step_time, planets)
@@ -97,7 +98,7 @@ def graphchart(win, settings, planets):
     fig = plt.figure(figsize=(7, 7))
     ax = plt.axes()
     ax.set_facecolor("black")
-    x_button = plt.axes((0.75, 0.005, 0.15, 0.04))
+    button_place = plt.axes((0.40, 0.005, 0.15, 0.04))
     global line_ani
     line_ani = animation.FuncAnimation(fig, animate_func, interval=1,
                                        frames=len(x[0]), repeat=False)
