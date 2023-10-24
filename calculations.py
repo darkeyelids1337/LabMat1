@@ -83,6 +83,7 @@ def scheme_Euler_Kramer(time, step_time, planets):
         for i in range(n):
             ax[i].append(get_a(i, x, y, planets))
             ay[i].append(get_a(i, y, x, planets))
+    print(x)
     return t, x, y, vx, vy
 
 

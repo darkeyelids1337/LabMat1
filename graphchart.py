@@ -55,8 +55,8 @@ def graphchart(win, settings, planets):
             ax.clear()  # Очищаем фигуру для обновления линии, точки,
             # заголовка и осей  # Обновляем линию траектории (num+1 из-за индексации Python)
             for i in range(len(planets)):
-                ax.plot(x[i][:num + 1], y[i][:num + 1], color=colors[i % len_colors],
-                        label=f'Planet {i}')  # Обновляем локацию точки
+                ax.plot(x[i][:num + 1], y[i][:num + 1], color=colors[i % len_colors])
+                         # Обновляем локацию точки
                 ax.scatter(x[i][num], y[i][num], color=colors[i % len_colors])  # Добавляем постоянную начальную точку
 
             ax.set_xlim([xmin - (xmax - xmin) * 0.2, xmax + (xmax - xmin) * 0.2])
@@ -65,13 +65,14 @@ def graphchart(win, settings, planets):
             vym = v_center_mass(vy, planets, general_m, num)
             energy = get_energy(x, y, vx, vy, planets, num)
             # Добавляем метки
-            ax.set_title(f'Time = {str(np.round(t[num], decimals=2))} sec \n'
-                         f'Vx = {vxm} \n'
-                         f'Vy = {vym} \n'
-                         f'E = {energy}')
+            ax.set_title(f'Время = {str(np.round(t[num], decimals=2))} sec \n'
+                        f'Vx = {vxm} \n'
+                        f'Vy = {vym} \n'
+                        f'E = {energy}', bbox=dict(boxstyle='round', fc='w'))
             ax.set_xlabel('x')
             ax.set_ylabel('y')
-            ax.legend(fontsize="small")
+            #ax.legend([f'Время = {str(np.round(t[num], decimals=2))} sec \n', f'Vx = {vxm} \n',f'Vy = {vym} \n', f'E = {energy}'],
+                   #  fontsize = 'small', handlelength=0, handletextpad=0, markerscale = 0)
             button = Button(x_button, 'Сохранить')
             button.on_clicked(save_data)
     if scheme == 'Эйлера-Крамера':

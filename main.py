@@ -11,7 +11,7 @@ matplotlib.use("TkAgg")
 G = 6.67e-11
 M = 1.2166e30
 clicked = False
-planetsCount = 2
+planetsCount = 3
 planets = [{
     'X': 0,
     'Y': 0,
@@ -21,7 +21,7 @@ planets = [{
     'E': 0,
 }]
 settings = {
-    'timeStep': 36000,
+    'timeStep': 360000,
     'totalTime': 31536000,
     'scheme': 'Эйлера-Крамера'
 }
@@ -45,6 +45,7 @@ def create_enter_planet(frame):
         global planetsCount
         global planets
         global clicked
+        planets = [planets[0]]
         planetsCount = int(entry.get())
         for i in range(int(planetsCount) - 1):
             planets.append(
