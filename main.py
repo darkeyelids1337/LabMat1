@@ -18,11 +18,14 @@ planets = [{
     'vX': 0,
     'vY': 0,
     'M': 1.2166 * 10 ** 30,
+    'C_F':500,
     'E': 0,
 }]
 settings = {
     'timeStep': 360000,
     'totalTime': 31536000,
+    'density': 1000,
+    'spaceDensity': 9.9 * 10 ** -12,
     'scheme': 'Эйлера-Крамера'
 }
 
@@ -50,7 +53,7 @@ def create_enter_planet(frame):
         for i in range(int(planetsCount) - 1):
             planets.append(
                 {'X': float(149500000000 * (i + 1)), 'Y': float(0), 'vX': float(0), 'vY': float(sqrt((G * M) / 149500000000 / (i + 1))),
-                 'M': float((i + 1) * 6.083 * 10 ** 24), 'E': float(0)})
+                 'M': float((i + 1) * 6.083 * 10 ** 24), 'C_F': float((i+1) * 750), 'E': float(0)})
         for widget in frame.grid_slaves():
             if widget['text'] == 'Сохранить' or widget['text'] == 'Новая система':
                 widget.grid_remove()
@@ -88,7 +91,6 @@ def create_button_frame(container):
     ttk.Button(frame, text='Файл', command=addButtons).grid(column=0, row=0)
     ttk.Button(frame, text='Параметры', command=lambda: create_settings_frame(planetsCount)).grid(column=1, row=0)
     ttk.Button(frame, text='Запуск модели', command=lambda: toStart(False)).grid(column=2, row=0)
-    ttk.Button(frame, text='Остановка').grid(column=3, row=0)
 
     for widget in frame.winfo_children():
         widget.grid(padx=10, pady=5)
@@ -102,7 +104,7 @@ def toStart(window):
             planets.append(
                 {'X': float(149500000000 * (i + 1)), 'Y': float(0), 'vX': float(0),
                  'vY': float(sqrt((G * M) / 149500000000 / (i + 1))),
-                 'M': float((i + 1) * 6.083 * 10 ** 24), 'E': float(0)})
+                 'M': float((i + 1) * 6.083 * 10 ** 24), 'C_F': float((i+1) * 750), 'E': float(0)})
     build_chart(root, settings, planets)
 def create_settings_frame(planetsCount):
     window = Tk()
@@ -112,14 +114,14 @@ def create_settings_frame(planetsCount):
         for i in range(int(planetsCount) - 1):
             planets.append(
                 {'X': float(149500000000 * (i + 1)), 'Y': float(0), 'vX': float(0), 'vY': float(sqrt((G * M) / 149500000000 / (i + 1))),
-                 'M': float((i + 1) * 6.083 * 10 ** 24), 'E': float(0)})
+                 'M': float((i + 1) * 6.083 * 10 ** 24), 'C_F': float((i+1) * 750), 'E': float(0)})
 
 
     def on_entry_change(input, name):
         global settings
-        reg = '^(-?)(0|([1-9][0-9]*))(\\.[0-9]+)?$'
+        reg = '\d+[eE][+-]\d+|\d+\.?\d*|\.\d+'
         if re.match(reg, input):
-            settings[name] = input
+            settings[name] = float(input)
             return True
         else:
             return False
@@ -149,10 +151,20 @@ def create_settings_frame(planetsCount):
     # regsun = window.register(on_sun_change)
     regplanets = window.register(on_planets_change)
     entryStep = Entry(frame1, validate="key", validatecommand=(reg, '%P', 'timeStep'))
+    entryStep.insert(0, 360000)
     entryStep.grid(column=1, row=0, padx=10)
     ttk.Label(frame1, text='Время моделирования, c').grid(column=0, row=1)
     entryTotalTime = Entry(frame1, validate="key", validatecommand=(reg, '%P', 'totalTime'))
+    entryTotalTime.insert(0,31536000)
     entryTotalTime.grid(column=1, row=1, padx=10)
+    ttk.Label(frame1, text='Плотность тел, кг/м3').grid(column=0, row=2)
+    entryDensity = Entry(frame1, validate="key", validatecommand=(reg, '%P', 'density'))
+    entryDensity.insert(0, 1000)
+    entryDensity.grid(column=1, row=2, padx=10)
+    ttk.Label(frame1, text='Плотность космоса, кг/м3').grid(column=0, row=3)
+    entrySpaceDensity = Entry(frame1, validate="key", validatecommand=(reg, '%P', 'spaceDensity'))
+    entrySpaceDensity.insert(0, settings['spaceDensity'])
+    entrySpaceDensity.grid(column=1, row=3, padx=10)
     schemes = ['Эйлера', 'Эйлера-Крамера', 'Верле', 'Бимана']
     schemes_var = StringVar(value=schemes[0])
     ttk.Label(frame1, text='Выбор схемы').grid(column=2, row=1)
@@ -161,12 +173,12 @@ def create_settings_frame(planetsCount):
     combobox.bind("<<ComboboxSelected>>", selected)
     combobox.grid(column=3, row=1)
     frame1.grid(column=1, row=0)
-    columns = ("№", "X", "Y", "vX", "vY", "M")
+    columns = ("№", "X", "Y", "vX", "vY", "M", 'C_F')
     frameTable = ttk.Frame(window)
     frameTable.columnconfigure(0, weight=1)
     frameTable.grid(column=1, row=1)
     for i in range(len(columns)):
-        ttk.Label(frameTable, text=columns[i], borderwidth=2, relief="ridge", width=30,
+        ttk.Label(frameTable, text=columns[i], borderwidth=2, relief="ridge", width=20,
                   justify=CENTER).grid(column=i, row=0)
     for i in range(planetsCount):
         ttk.Label(frameTable, text=i, justify=CENTER).grid(column=0, row=i + 1)
@@ -174,7 +186,7 @@ def create_settings_frame(planetsCount):
         for value in item:
             if value == 'E':
                 break
-            e2 = ttk.Entry(frameTable, validate="key", validatecommand=(regplanets, '%P', planets.index(item), value), width=30)
+            e2 = ttk.Entry(frameTable, validate="key", validatecommand=(regplanets, '%P', planets.index(item), value), width=20)
             e2.grid(column=list(item.keys()).index(value) + 1, row=planets.index(item) + 1)
             e2.insert(0, item[value])
 

@@ -33,6 +33,8 @@ def _energy(x, y, vx, vy, planets, n):
 def graphchart(win, settings, planets):
     time = int(settings['totalTime'])
     step_time = int(settings['timeStep'])
+    density = float(settings['density'])
+    spaceDensity = float(settings['spaceDensity'])
     scheme = settings['scheme']
     def to_file(event):
         data = ''
@@ -75,7 +77,7 @@ def graphchart(win, settings, planets):
             button = Button(button_place, 'Save')
             button.on_clicked(to_file)
     if scheme == 'Эйлера-Крамера':
-        t, x, y, vx, vy = scheme_Euler_Kramer(time, step_time, planets)
+        t, x, y, vx, vy = scheme_Euler_Kramer(time, step_time, float(density), float(spaceDensity), planets)
     elif scheme == 'Эйлера':
         t, x, y, vx, vy = scheme_Euler(time, step_time, planets)
     elif scheme == 'Верле':
