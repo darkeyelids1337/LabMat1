@@ -11,7 +11,7 @@ from computations import scheme_Euler, scheme_Euler_Kramer, scheme_Verle, scheme
 mpl.use('TkAgg')
 
 
-colors = ["red", "blue", "green", "black", "orange", "peru", "aqua", "pink", "olive", "lime"]
+colors = ["red", "blue", "green", "yellow", "orange", "peru", "aqua", "pink", "olive", "lime"]
 len_colors = 10
 G = 6.67e-11
 button = None
@@ -54,7 +54,6 @@ def graphchart(win, settings, planets):
 
     def animate_func(num):
             global button
-
             ax.clear()  # Очищаем фигуру для обновления линии, точки,
             # заголовка и осей  # Обновляем линию траектории (num+1 из-за индексации Python)
             for i in range(len(planets)):
@@ -79,11 +78,11 @@ def graphchart(win, settings, planets):
     if scheme == 'Эйлера-Крамера':
         t, x, y, vx, vy = scheme_Euler_Kramer(time, step_time, float(density), float(spaceDensity), planets)
     elif scheme == 'Эйлера':
-        t, x, y, vx, vy = scheme_Euler(time, step_time, planets)
+        t, x, y, vx, vy = scheme_Euler(time, step_time, float(density), float(spaceDensity), planets)
     elif scheme == 'Верле':
-        t, x, y, vx, vy = scheme_Verle(time, step_time, planets)
+        t, x, y, vx, vy = scheme_Verle(time, step_time, float(density), float(spaceDensity), planets)
     elif scheme == 'Бимана':
-        t, x, y, vx, vy = scheme_Biman(time, step_time, planets)
+        t, x, y, vx, vy = scheme_Biman(time, step_time, float(density), float(spaceDensity), planets)
     general_m = sum([i['M'] for i in planets])
     xmin = xmax = x[0][0]
     ymin = ymax = y[0][0]
@@ -101,7 +100,6 @@ def graphchart(win, settings, planets):
     ax = plt.axes()
     ax.set_facecolor("black")
     button_place = plt.axes((0.40, 0.005, 0.15, 0.04))
-    global line_ani
     line_ani = animation.FuncAnimation(fig, animate_func, interval=1,
                                        frames=len(x[0]), repeat=False)
     canvas = FigureCanvasTkAgg(fig, master=win)

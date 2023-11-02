@@ -25,7 +25,7 @@ settings = {
     'timeStep': 360000,
     'totalTime': 31536000,
     'density': 1000,
-    'spaceDensity': 9.9 * 10 ** -12,
+    'spaceDensity': 9.9 * 10 ** -7,
     'scheme': 'Эйлера-Крамера'
 }
 
@@ -99,7 +99,7 @@ def create_button_frame(container):
 def toStart(window):
     if window:
         window.destroy()
-    if len(planets) == 1:
+    elif len(planets) == 1:
         for i in range(int(planetsCount) - 1):
             planets.append(
                 {'X': float(149500000000 * (i + 1)), 'Y': float(0), 'vX': float(0),
@@ -121,7 +121,10 @@ def create_settings_frame(planetsCount):
         global settings
         reg = '\d+[eE][+-]\d+|\d+\.?\d*|\.\d+'
         if re.match(reg, input):
-            settings[name] = float(input)
+            if name == 'timeStep' or name == 'totalTime':
+                settings[name] = int(input)
+            else:
+                settings[name] = float(input)
             return True
         else:
             return False
@@ -148,18 +151,17 @@ def create_settings_frame(planetsCount):
     frame1.columnconfigure(0, weight=1)
     ttk.Label(frame1, text='Шаг по времени, c').grid(column=0, row=0)
     reg = window.register(on_entry_change)
-    # regsun = window.register(on_sun_change)
     regplanets = window.register(on_planets_change)
     entryStep = Entry(frame1, validate="key", validatecommand=(reg, '%P', 'timeStep'))
-    entryStep.insert(0, 360000)
+    entryStep.insert(0, settings['timeStep'])
     entryStep.grid(column=1, row=0, padx=10)
     ttk.Label(frame1, text='Время моделирования, c').grid(column=0, row=1)
     entryTotalTime = Entry(frame1, validate="key", validatecommand=(reg, '%P', 'totalTime'))
-    entryTotalTime.insert(0,31536000)
+    entryTotalTime.insert(0, settings['totalTime'])
     entryTotalTime.grid(column=1, row=1, padx=10)
     ttk.Label(frame1, text='Плотность тел, кг/м3').grid(column=0, row=2)
     entryDensity = Entry(frame1, validate="key", validatecommand=(reg, '%P', 'density'))
-    entryDensity.insert(0, 1000)
+    entryDensity.insert(0, settings['density'])
     entryDensity.grid(column=1, row=2, padx=10)
     ttk.Label(frame1, text='Плотность космоса, кг/м3').grid(column=0, row=3)
     entrySpaceDensity = Entry(frame1, validate="key", validatecommand=(reg, '%P', 'spaceDensity'))
