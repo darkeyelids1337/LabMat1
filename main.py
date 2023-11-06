@@ -132,11 +132,15 @@ def create_settings_frame(planetsCount):
         global planets
         #print(planets[0][key])
         reg = '\d+[eE][+-]\d+|\d+\.?\d*|\.\d+'
-        if re.match(reg, input):
-            planets[int(index)][key] = float(input)
-            return True
-        else:
-            return False
+        print(input)
+        input = float(input)
+        planets[int(index)][key] = input
+        return True
+        # if re.match(reg, input):
+        #     planets[int(index)][key] = input
+        #     return True
+        # else:
+        #     return False
 
     def selected(event):
         global settings
